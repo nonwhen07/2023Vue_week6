@@ -1,8 +1,5 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-    <LoadingOverlay :active="isLoading"/>
-  </div>
+  <h2>關於我們</h2>
 </template>
 
 <style>
@@ -17,17 +14,14 @@
 
 
 <script>
+const{VITE_APP_URL, VITE_APP_PATH} = import.meta.env;
 
 export default {
-  data(){
+  data() {
     return {
-      isLoading: true,
     }
   },
-  mounted(){
-    setTimeout(() => {
-      this.isLoading = false
-    }, 1000)
+  mounted() {
   }
 }
 </script>

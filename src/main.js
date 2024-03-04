@@ -1,5 +1,8 @@
 // Vue外部
-import './assets/main.css'
+//import './assets/main.css'
+import 'bootstrap/scss/bootstrap.scss'
+// 改用自定義的bootstrap
+//import './assets/all.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
