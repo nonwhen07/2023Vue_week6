@@ -14,7 +14,7 @@
 
 
 <script>
-const{VITE_APP_URL, VITE_APP_PATH} = import.meta.env;
+const{VITE_URL, VITE_PATH} = import.meta.env;
 
 export default {
   data() {
