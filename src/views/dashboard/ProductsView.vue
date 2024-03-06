@@ -1,75 +1,72 @@
 <template>
-    <h2>商品列表</h2>
-    <div class="container">
-      <div class="text-end mt-4">
-        <button class="btn btn-primary"
-          data-bs-toggle="modal" data-bs-target="#productModal"
-          @click="openModal(true)">
-          建立新的產品
-        </button>
-      </div>
-      <table class="table mt-4">
-        <thead>
-          <tr>
-            <th width="120">
-              分類
-            </th>
-            <th>產品名稱</th>
-            <th width="120">
-              原價
-            </th>
-            <th width="120">
-              售價
-            </th>
-            <th width="100">
-              是否啟用
-            </th>
-            <th width="120">
-              編輯
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for=" product in products" :key="product.id">
-            <td>{{product.category}}</td>
-            <td>{{product.title}}</td>
-            <td class="text-start">{{product.origin_price}}</td>
-            <td class="text-start">{{product.price}}</td>
-            <td>
-              <div v-if="product.is_enabled === 1">
-                <p style="color: rgb(36, 212, 95);">啟用</p>
-              </div>
-              <div v-else>
-                <p style="color: red;">未啟用</p>
-              </div>
-            </td>
-            <td>
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-primary btn-sm" 
-                  data-bs-toggle="modal" data-bs-target="#productModal"
-                  @click="openModal(false, product)">
-                  編輯
-                </button>
-                <button type="button" class="btn btn-outline-danger btn-sm" 
-                  data-bs-toggle="modal" data-bs-target="#delProductModal" 
-                  @click="openModal(false, product)">
-                  刪除
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <h2>商品列表</h2>
+  <div class="container">
+    <div class="text-end mt-4">
+      <button class="btn btn-primary"
+        data-bs-toggle="modal" data-bs-target="#productModal"
+        @click="openModal(true)">
+        建立新的產品
+      </button>
     </div>
-    <!-- pagination -->
-    <Pagination :pages="pages" :get-products="getProducts" ></Pagination>
-    <!-- pagination -->
-    <!-- Modal -->
-    <Prod-Modal :temp-product="tempProduct" :updata-product="updataProduct" 
-      :add-image="addImage" :del-image="delImage" ref="pModal"></Prod-Modal>
-    <Del-Modal :temp-product="tempProduct" :del-product="delProduct" ref="dModal"></Del-Modal>
-    <!-- Modal -->
-
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th width="120">
+            分類
+          </th>
+          <th>產品名稱</th>
+          <th width="120">
+            原價
+          </th>
+          <th width="120">
+            售價
+          </th>
+          <th width="100">
+            是否啟用
+          </th>
+          <th width="120">
+            編輯
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for=" product in products" :key="product.id">
+          <td>{{product.category}}</td>
+          <td>{{product.title}}</td>
+          <td class="text-start">{{product.origin_price}}</td>
+          <td class="text-start">{{product.price}}</td>
+          <td>
+            <div v-if="product.is_enabled === 1">
+              <p style="color: rgb(36, 212, 95);">啟用</p>
+            </div>
+            <div v-else>
+              <p style="color: red;">未啟用</p>
+            </div>
+          </td>
+          <td>
+            <div class="btn-group">
+              <button type="button" class="btn btn-outline-primary btn-sm" 
+                data-bs-toggle="modal" data-bs-target="#productModal"
+                @click="openModal(false, product)">
+                編輯
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm" 
+                data-bs-toggle="modal" data-bs-target="#delProductModal" 
+                @click="openModal(false, product)">
+                刪除
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- pagination -->
+  <Pagination :pages="pages" :get-products="getProducts" ></Pagination>
+  <!-- Modal -->
+  <Prod-Modal :temp-product="tempProduct" :updata-product="updataProduct" 
+    :add-image="addImage" :del-image="delImage" ref="pModal"></Prod-Modal>
+  <Del-Modal :temp-product="tempProduct" :del-product="delProduct" ref="dModal"></Del-Modal>
 </template>
 
 <script>
@@ -95,7 +92,9 @@ export default {
         const api = `${VITE_URL}/api/user/check`;
         axios.post(api)
         .then(() => {
-            this.getProducts();
+          this.getProducts();
+          //臨時-後台確認Orders用
+          this.getOrders();
         })
         .catch(() => {
           alert('帳號密碼有誤，將轉回登入頁面');
@@ -161,6 +160,29 @@ export default {
         delImage(index) {
         this.tempProduct.imagesUrl.splice(index, 1);
         },
+        //臨時-後台確認Orders用 之後轉移
+        getOrders() {
+            const api = `${VITE_URL}/api/${VITE_PATH}/admin/orders`;
+            axios.get(api)
+            .then((res) => {
+              //console.log('this.Order =>', res.data);
+              console.log('this.Order.Orders =>', res.data.orders);
+            })
+            .catch((err) => {
+                alert(err.data.message);
+            })
+            // 刪除訂單(all)
+            // const api2 = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
+            // axios.delete(api2)
+            // .then((res) => {
+            //     console.log('this.Order =>', res);
+            //     //console.log('this.Order.Orders =>', res.data.orders);
+            // })
+            // .catch((err) => {
+            //     alert(err.data.message);
+            // })
+        },
+
     },
     created(){ // dashboard以處理登入問題
         const token = document.cookie.replace(

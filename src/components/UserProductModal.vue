@@ -17,7 +17,7 @@
                             <img :src="image" v-bind:alt="tempProduct.title" class="card-img-top primary-image"
                                 v-bind:title="tempProduct.title+':'+tempProduct.description">
                         </template> -->
-                        <template v-for="(image, index) in tempProduct.imagesUrl" :key="image">
+                        <template v-for="(image, index) in tempProduct.imagesUrl" :key="index">
                             <img :src="image" v-bind:alt="tempProduct.title" class="card-img-top primary-image"
                                 v-bind:title="tempProduct.title+':'+tempProduct.description">
                         </template>
