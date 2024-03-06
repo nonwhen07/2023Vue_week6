@@ -3,8 +3,8 @@
     <div class="container">
 
         <div class="mt-4">
-        <!-- 產品Modal -->
-        <User-Modal :temp-product="tempProduct" :add-to-cart="addToCart" ref="uModal"></User-Modal>
+        
+            
         <!-- 產品列表 -->
         <table class="table align-middle">
             <thead>
@@ -30,13 +30,19 @@
                 </td>
                 <td>
                 <div class="btn-group">
+                    <!-- <button type="button" class="btn btn-outline-primary btn-sm" 
+                        data-bs-toggle="modal" data-bs-target="#userProductModal"
+                        :disabled="product.id === status.checkProduct"  @click="openModal(product)">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <span v-if="product.id === status.checkProduct" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ></span>
+                        查看更多
+                    </button> -->
+
                     <button type="button" class="btn btn-outline-primary btn-sm" 
-                    data-bs-toggle="modal" data-bs-target="#userProductModal"
-                    :disabled="product.id === status.checkProduct"
-                    @click="openModal(product)">
-                    <i class="fas fa-spinner fa-pulse"></i>
-                    <span v-if="product.id === status.checkProduct" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    查看更多
+                        :disabled="product.id === status.checkProduct"  @click="openModal(product)">
+                        <i class="fas fa-spinner fa-pulse"></i>
+                        <span v-if="product.id === status.checkProduct" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ></span>
+                        查看更多
                     </button>
                     <button type="button" class="btn btn-outline-danger btn-sm" 
                     :disabled="product.id === status.addCartLoading" @click="addToCart(product.id, 1)">
@@ -52,6 +58,7 @@
         <!-- pagination -->
         <Pagination :pages="pages" :get-products="getProducts"></Pagination>
 
+        
         <!-- 購物車列表 -->
         <template v-if="cartslength > 0">
             <div class="text-end">
@@ -162,6 +169,8 @@
         </template>
         </div>
     </div>
+    <!-- 產品Modal -->
+    <User-Modal :temp-product="tempProduct" :add-to-cart="addToCart" ref="uModal"></User-Modal>
     <Loading :active="isLoading" />
 
 </template>
@@ -210,6 +219,9 @@ export default {
     },
     methods: {
         openModal(item) {
+            this.$refs.uModal.openModal();
+
+
             this.status.checkProduct = item.id;
             this.tempProduct = { ...item };
             //this.status.checkProduct = '';
@@ -256,8 +268,8 @@ export default {
             axios[httpMethod](api, { data: cart })
             .then(() => {
                 this.getCarts();
-                this.$refs.uModal.closeModal();
                 this.status.addCartLoading = '';
+                this.$refs.uModal.closeModal();
             })
             .catch((err) => {
                 alert(err.data.message);
@@ -275,7 +287,7 @@ export default {
             axios[httpMethod](api, { data: order })
             .then(() => {
                 this.getCarts();
-                this.$refs.uModal.closeModal();
+                //this.$refs.uModal.closeModal();
                 this.status.cartQtyLoading = '';
             })
             .catch((err) => {

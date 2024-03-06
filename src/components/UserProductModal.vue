@@ -52,7 +52,8 @@
 
 
 <script>
-import { Modal } from 'bootstrap';
+//import { Modal } from 'bootstrap/js/dist/modal'
+import Modal from 'bootstrap/js/dist/modal';
 
 export default {
     props: ['tempProduct', 'addToCart'],
@@ -71,7 +72,7 @@ export default {
             this.userModal.show();
         },
         closeModal() {
-            this.userModal.hide();
+            this.userModal.toggle();
         },
     },
     watch: {
@@ -82,6 +83,10 @@ export default {
     },
     mounted() {
         this.userModal = new Modal(this.$refs.userProductModal);
+        // this.userModal = new Modal(this.$refs.userProductModal, {
+        //     keyboard: false,
+        //     backdrop: 'static'
+        //     });
         this.editProduct = this.tempProduct;
     },
 }
