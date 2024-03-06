@@ -138,10 +138,7 @@
                     <button
                       type="button"
                       class="btn btn-outline-primary btn-sm"
-                      @click="
-                        cartitem.qty--
-                        cartChangeQty(cartitem, cartitem.qty)
-                      "
+                      @click="cartitem.qty--, cartChangeQty(cartitem, cartitem.qty)"
                       :disabled="cartitem.qty === 1 || cartitem.id === status.cartQtyLoading"
                     >
                       -
@@ -158,10 +155,7 @@
                     <button
                       type="button"
                       class="btn btn-outline-primary btn-sm"
-                      @click="
-                        cartitem.qty++
-                        cartChangeQty(cartitem, cartitem.qty)
-                      "
+                      @click="cartitem.qty++, cartChangeQty(cartitem, cartitem.qty)"
                       :disabled="cartitem.id === status.cartQtyLoading"
                     >
                       +
