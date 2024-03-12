@@ -6,26 +6,26 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/FrontView.vue'),
+      component: () => import('../views/front/FrontView.vue'),
       children: [
         {
           path: '',
           name: 'home',
           // component: HomeView
-          component: () => import('../views/HomeView.vue')
+          component: () => import('../views/front/HomeView.vue')
         },
         {
           path: 'about',
           name: 'about',
-          component: () => import('../views/AboutView.vue')
+          component: () => import('../views/front/AboutView.vue')
         },
         {
           path: 'products',
-          component: () => import('../views/ProductsView.vue')
+          component: () => import('../views/front/ProductsView.vue')
         },
         {
           path: 'cart',
-          component: () => import('../views/CartView.vue')
+          component: () => import('../views/front/CartView.vue')
         },
         
       ]
@@ -33,7 +33,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import('../views/front/LoginView.vue')
     },
     {
       path: '/admin',
@@ -49,7 +49,18 @@ const router = createRouter({
         }
       ]
     },
-    
+    //404
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('../views/front/NotFound.vue')
+    },
+    // //重新導向 
+    // {
+    //   path: '/:pathMatch(.*)*',
+    //   redirect: {
+    //     name: 'home',
+    //   }
+    // }
   ]
 })
 
