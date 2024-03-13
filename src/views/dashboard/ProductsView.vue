@@ -1,4 +1,5 @@
 <template>
+  <Loading :active="isLoading"></Loading>
   <h2>商品列表</h2>
   <div class="container">
     <div class="text-end mt-4">
@@ -67,6 +68,9 @@
 
 <script>
 import axios from 'axios';
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/css/index.css'
+
 import Pagination from '@/components/Pagination.vue';
 import ProdModal from '@/components/ProductModal.vue';
 import DelModal from '@/components/DeleteModal.vue';
@@ -76,6 +80,7 @@ const { VITE_URL, VITE_PATH } = import.meta.env;
 export default {
   data(){
       return {
+      isLoading: false,
       isNew: false,
       tempProduct: {}, //點選產品
       selectID: '', //點選產品ID
@@ -84,20 +89,20 @@ export default {
       }
   },
   methods: {
-    checkSignIn() {
-      const api = `${VITE_URL}/api/user/check`;
-      axios.post(api)
-      .then(() => {
-        this.getProducts();
-        //臨時-後台確認Orders用
-        this.getOrders();
-      })
-      .catch(() => {
-      alert('帳號密碼有誤，將轉回登入頁面');
-      //window.location.assign("login.html");
-      this.$router.push('/login');
-    })
-    },
+    // checkSignIn() {
+    //   const api = `${VITE_URL}/api/user/check`;
+    //   axios.post(api)
+    //   .then(() => {
+    //     // this.getProducts();
+    //     // //臨時-後台確認Orders用
+    //     // //this.getOrders();
+    //   })
+    //   .catch(() => {
+    //     alert('帳號密碼有誤，將轉回登入頁面');
+    //     //window.location.assign("login.html");
+    //     this.$router.push('/login');
+    //   })
+    // },
     getProducts(page = 1) {
         const api = `${VITE_URL}/api/${VITE_PATH}/admin/products?page=${page}`;
         axios.get(api)
@@ -163,43 +168,49 @@ export default {
     this.tempProduct.imagesUrl.splice(index, 1);
     },
 
-    //臨時-後台確認Orders用 之後轉移
-    getOrders() {
-        const api = `${VITE_URL}/api/${VITE_PATH}/admin/orders`;
-        axios.get(api)
-        .then(() => {
-          //console.log('this.Order =>', res.data);
-          //console.log('this.Order.Orders =>', res.data.orders);
-        })
-        .catch((err) => {
-            alert(err.data.message);
-        })
-        // 刪除訂單(all)
-        // const api2 = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
-        // axios.delete(api2)
-        // .then((res) => {
-        //     console.log('this.Order =>', res);
-        //     //console.log('this.Order.Orders =>', res.data.orders);
-        // })
-        // .catch((err) => {
-        //     alert(err.data.message);
-        // })
-    },
+    // //臨時-後台確認Orders用 之後轉移
+    // getOrders() {
+    //     const api = `${VITE_URL}/api/${VITE_PATH}/admin/orders`;
+    //     axios.get(api)
+    //     .then(() => {
+    //       //console.log('this.Order =>', res.data);
+    //       //console.log('this.Order.Orders =>', res.data.orders);
+    //     })
+    //     .catch((err) => {
+    //         alert(err.data.message);
+    //     })
+    //     // 刪除訂單(all)
+    //     // const api2 = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
+    //     // axios.delete(api2)
+    //     // .then((res) => {
+    //     //     console.log('this.Order =>', res);
+    //     //     //console.log('this.Order.Orders =>', res.data.orders);
+    //     // })
+    //     // .catch((err) => {
+    //     //     alert(err.data.message);
+    //     // })
+    // },
   },
-  created(){ // dashboard以處理登入問題
-    const token = document.cookie.replace(
-      /(?:(?:^|.*;\s*)shopToken\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-    axios.defaults.headers.common["Authorization"] = token;
-    this.checkSignIn();
+  created(){ 
+    // 在dashboard已處理登入問題
+    // const token = document.cookie.replace(/(?:(?:^|.*;\s*)shopToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
+    // axios.defaults.headers.common['Authorization'] = token
+    // this.checkSignIn()
+
+
+    this.isLoading = true
+    this.getProducts()
+    setTimeout(() => {
+      this.isLoading = false //狀態驅動'元件'
+    }, 1000)
   },
   mounted() {
   },
   components: {
     Pagination,
     ProdModal,
-    DelModal
+    DelModal,
+    Loading
   }
 }
 </script>

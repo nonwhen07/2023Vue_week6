@@ -44,8 +44,12 @@ const router = createRouter({
           component: () => import('../views/dashboard/ProductsView.vue')
         },
         {
-          path: 'order',
-          component: () => import('../views/dashboard/OrderView.vue')
+          path: 'orders',
+          component: () => import('../views/dashboard/OrdersView.vue')
+        },
+        {
+          path: 'coupon',
+          component: () => import('../views/dashboard/CouponView.vue')
         }
       ]
     },

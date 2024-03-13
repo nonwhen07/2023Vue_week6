@@ -3,7 +3,9 @@
     <nav>
         <RouterLink to="/">回到前台</RouterLink> |
         <RouterLink to="/admin/products">產品列表</RouterLink> |
-        <RouterLink to="/admin/order">訂單列表</RouterLink> 
+        <RouterLink to="/admin/orders">訂單列表</RouterLink> |
+        <RouterLink to="/admin/coupon">優惠卷列表</RouterLink> |
+        <RouterLink to="" @click="logout">登出</RouterLink> 
     </nav>
     <RouterView></RouterView>
 </template>
@@ -30,7 +32,6 @@ export default {
             const api = `${VITE_URL}/api/user/check`;
             axios.post(api)
             .then(() => {
-                //this.getProducts();
             })
             .catch(() => {
                 alert('帳號密碼有誤，將轉回登入頁面');
@@ -39,12 +40,22 @@ export default {
             })
             
         },
+        logout() {
+            const api = `${VITE_URL}/logout`;
+            axios.post(api)
+            .then(() => {
+                alert('登出成功');
+                this.$router.push('/login');
+            })
+            // .catch(() => {
+            //     alert('帳號密碼有誤，將轉回登入頁面');
+            //     this.$router.push('/login');
+            // })
+            
+        },
     },
     created(){
-        const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)shopToken\s*=\s*([^;]*).*$)|^.*$/,
-        "$1"
-        );
+        const token = document.cookie.replace( /(?:(?:^|.*;\s*)shopToken\s*=\s*([^;]*).*$)|^.*$/, "$1");
         axios.defaults.headers.common["Authorization"] = token;
         //this.$http.defaults.headers.common["Authorization"] = token;
         this.checkSignIn();
