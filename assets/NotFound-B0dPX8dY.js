@@ -1,0 +1,1 @@
+import{_ as t,c as n,b as s,w as a,F as c,a as e,r,o as _,d}from"./index-DkNj6rE5.js";const l={},u=e("h2",null,"404 Not Found",-1),i=e("p",null," Oops！您要找的頁面被小精靈吃掉了 ",-1);function p(f,m){const o=r("RouterLink");return _(),n(c,null,[u,i,s(o,{to:"/"},{default:a(()=>[d("回到首頁")]),_:1})],64)}const x=t(l,[["render",p]]);export{x as default};
