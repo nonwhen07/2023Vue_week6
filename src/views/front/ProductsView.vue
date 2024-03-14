@@ -1,8 +1,42 @@
 <template>
+  <Loading :active="isLoading" />
   <h2>商品列表</h2>
   <div class="container">
     <div class="mt-4">
       <!-- 產品列表 -->
+      <!-- <ul class="list-group list-group-horizontal">
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=all&page=1" class="router-link-active active px-3 px-md-4 py-1"> 全部 </a>
+        </li>
+
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=旅遊類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 旅遊類 </a>
+        </li>
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=蔬果類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 蔬果類 </a>
+        </li>
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=肉品類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 肉品類 </a>
+        </li>
+
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=吐司&page=1" class="router-link-active active px-3 px-md-4 py-1"> 吐司 </a>
+        </li>
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=漢堡&page=1" class="router-link-active active px-3 px-md-4 py-1"> 漢堡 </a>
+        </li>
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=蛋餅&page=1" class="router-link-active active px-3 px-md-4 py-1"> 蛋餅 </a>
+        </li>
+        <li class="list-group-item btn btn-outline-primary p-0"> 
+          <a aria-current="page" href="?category=飲品&page=1" class="router-link-active active px-3 px-md-4 py-1"> 飲品 </a>
+        </li>
+      </ul> 
+      <Navbar></Navbar> -->
+
+      
+      
+
       <table class="table align-middle">
         <thead>
           <tr>
@@ -19,7 +53,7 @@
                 <img
                   :src="product.imageUrl"
                   v-bind:alt="product.title"
-                  class="card-img-top primary-image"
+                  class="img-fluid"
                   style="height: 100px"
                   v-bind:title="product.title + ':' + product.description"
                 />
@@ -32,14 +66,6 @@
             </td>
             <td>
               <div class="btn-group">
-                <!-- <button type="button" class="btn btn-outline-primary btn-sm" 
-                        data-bs-toggle="modal" data-bs-target="#userProductModal"
-                        :disabled="product.id === status.checkProduct"  @click="openModal(product)">
-                        <i class="fas fa-spinner fa-pulse"></i>
-                        <span v-if="product.id === status.checkProduct" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ></span>
-                        查看更多
-                    </button> -->
-
                 <button
                   type="button"
                   class="btn btn-outline-primary btn-sm"
@@ -76,8 +102,7 @@
         </tbody>
       </table>
       <!-- pagination -->
-      <Pagination :pages="pages" :get-products="getProducts"></Pagination>
-
+      <Pagination :pages="pages" :update-page="getProducts"></Pagination>
       <!-- 購物車列表 -->
       <template v-if="cartslength > 0">
         <div class="text-end">
@@ -269,16 +294,17 @@
   </div>
   <!-- 產品Modal -->
   <User-Modal :temp-product="tempProduct" :add-to-cart="addToCart" ref="uModal"></User-Modal>
-  <Loading :active="isLoading" />
 </template>
 
 <script>
 import axios from 'axios'
-import Pagination from '@/components/Pagination.vue'
-import UserModal from '@/components/UserProductModal.vue'
-
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
+import Pagination from '@/components/PaginationTool.vue'
+import UserModal from '@/components/UserProductModal.vue'
+
+// import Navbar from '@/components/FrontNavbar.vue'
+
 
 const { VITE_URL, VITE_PATH } = import.meta.env
 
@@ -458,9 +484,10 @@ export default {
     // }, 1000);
   },
   components: {
+    Loading,
     Pagination,
     UserModal,
-    Loading
+    //Navbar
   }
 }
 </script>

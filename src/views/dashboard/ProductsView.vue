@@ -11,9 +11,9 @@
       <thead>
         <tr>
           <th width="120">
-            分類
+            品項分類
           </th>
-          <th>產品名稱</th>
+          <th colspan="2">產品名稱</th>
           <th width="120">
             原價
           </th>
@@ -31,6 +31,14 @@
       <tbody>
         <tr v-for=" product in products" :key="product.id">
           <td>{{product.category}}</td>
+          <td style="max-height: 100%; max-width: 100%; position: static;">
+            <img 
+              :src="product.imageUrl"
+              :alt="product.title"
+              :title="product.title + ':' + product.description"
+              class="img-fluid" style="height:100px;"
+            />
+          </td>
           <td>{{product.title}}</td>
           <td class="text-start">{{product.origin_price}}</td>
           <td class="text-start">{{product.price}}</td>
@@ -59,9 +67,9 @@
     </table>
   </div>
   <!-- pagination -->
-  <Pagination :pages="pages" :get-products="getProducts" ></Pagination>
+  <Pagination :pages="pages" :update-page="getProducts" ></Pagination>
   <!-- Modal -->
-  <Prod-Modal :temp-product="tempProduct" :updata-product="updataProduct" 
+  <Prod-Modal :temp-product="tempProduct" :update-product="updateProduct" 
     :add-image="addImage" :del-image="delImage" ref="pModal"></Prod-Modal>
   <Del-Modal :temp-product="tempProduct" :del-product="delProduct" ref="dModal"></Del-Modal>
 </template>
@@ -71,7 +79,7 @@ import axios from 'axios';
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
 
-import Pagination from '@/components/Pagination.vue';
+import Pagination from '@/components/PaginationTool.vue';
 import ProdModal from '@/components/ProductModal.vue';
 import DelModal from '@/components/DeleteModal.vue';
 
@@ -126,7 +134,7 @@ export default {
       }
       this.isNew = isNew;
     },
-    updataProduct(item) {
+    updateProduct(item) {
         let api = `${VITE_URL}/api/${VITE_PATH}/admin/product`; //預設新增，再來判斷isNew
         let httpMethod = 'post'
         if (!this.isNew) {

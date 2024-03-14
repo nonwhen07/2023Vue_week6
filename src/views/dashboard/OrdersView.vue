@@ -5,33 +5,37 @@
     <table class="table mt-4">
       <thead>
         <tr>
-          <th width="120">訂單日期</th>
+          <th width="120">下單時間</th>
           <th width="120">Email</th>
-          <th>訂單款項</th>
+          <th>訂單品項</th>
           <th>應付金額</th>
-          <th width="100">是否付款</th>
+          <th width="100">付款狀態</th>
           <th width="220">編輯</th>
         </tr>
       </thead>
       <tbody>
-        <template v-for="(order, key) in orders" :key="key">
+        <template v-for="order in orders" :key="order.id">
           <tr v-if="orders.length">
             <td>{{ new Date(order.create_at * 1000).toLocaleDateString() }}</td>
-            <td><span v-text="order.user.email" v-if="order.user"></span></td>
+            <td>
+              <span v-text="order.user.email" v-if="order.user"></span>
+            </td>
             <td class="text-start">
               <ul>
                 <li v-for="(product, i) in order.products" :key="i">
-                  品項 : {{ product.product.title }} - {{ product.qty }} {{ product.product.unit }}
+                  品項 : {{ product.product.title }} / {{ product.qty }}{{ product.product.unit }}
                 </li>
               </ul>
             </td>
-            <td class="text-right">{{ order.total }}</td>
+            <td class="text-right"> {{ order.total }} </td>
             <td>
-              <div v-if="order.is_paid === 1">
-                <p style="color: rgb(36, 212, 95)">已付款</p>
-              </div>
-              <div v-else>
-                <p style="color: red">尚未付款</p>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" :id="`paidSwitch${order.id}`"
+                  v-model="order.is_paid" @change="updatePaid(order)">
+                <label class="form-check-label" :for="`paidSwitch${order.id}`">
+                  <span v-if="order.is_paid">已付款</span>
+                  <span v-else>未付款</span>
+                </label>
               </div>
             </td>
             <td>
@@ -39,15 +43,13 @@
                 <button
                   type="button"
                   class="btn btn-outline-primary btn-sm"
-                  @click="openModal('check', order)"
-                >
+                  @click="openModal('check', order)">
                   查看細節
                 </button>
                 <button
                   type="button"
                   class="btn btn-outline-danger btn-sm"
-                  @click="openModal('dele', order)"
-                >
+                  @click="openModal('dele', order)">
                   刪除訂單
                 </button>
               </div>
@@ -58,9 +60,10 @@
     </table>
   </div>
   <!-- pagination -->
-  <OrderPagination :pages="pages" :get-orders="getOrders"></OrderPagination>
+  <!-- <OrderPagination :pages="pages" :update-page="getOrders"></OrderPagination> -->
+  <Pagination :pages="pages" :update-page="getOrders"></Pagination>
   <!-- Modal -->
-  <Ord-Modal :temp-order="tempOrder" :update-order="updateOrder" ref="oModal"></Ord-Modal>
+  <Ord-Modal :temp-order="tempOrder" :update-paid="updatePaid" ref="oModal"></Ord-Modal>
   <Del-Modal :temp-order="tempOrder" :del-order="delOrder" ref="dModal"></Del-Modal>
 </template>
 
@@ -69,7 +72,8 @@ import axios from 'axios'
 import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/css/index.css'
 
-import OrderPagination from '@/components/OrderPagination.vue'
+//import OrderPagination from '@/components/OrderPagination.vue'
+import Pagination from '@/components/PaginationTool.vue'
 import OrdModal from '@/components/OrderModal.vue'
 import DelModal from '@/components/DeleteOrderModal.vue'
 
@@ -86,18 +90,6 @@ export default {
     }
   },
   methods: {
-    // checkSignIn() {
-    //   const api = `${VITE_URL}/api/user/check`
-    //   axios
-    //     .post(api)
-    //     .then(() => {
-    //     })
-    //     .catch(() => {
-    //       alert('帳號密碼有誤，將轉回登入頁面')
-    //       //window.location.assign("login.html");
-    //       this.$router.push('/login')
-    //     })
-    // },
     //取得頁面Orders
     getOrders(page = 1) {
       this.isLoading = true
@@ -109,9 +101,9 @@ export default {
           this.orders = res.data.orders
           this.pages = res.data.pagination
         })
-        .catch((err) => {
+        .catch(() => {
           this.isLoading = false
-          alert(err.data.message)
+          //alert(err.data.message)
         })
     },
     //開啟Modal判斷
@@ -124,23 +116,28 @@ export default {
       }
       this.tempOrder = { ...item }
     },
-    //更新訂單資訊
-    updateOrder(item) {
+    //更新訂單的"付款"資訊
+    updatePaid(item) {
       this.isLoading = true
-      const api = `${VITE_URL}/api/${VITE_PATH}/admin/product/${item.id}`
+      const api = `${VITE_URL}/api/${VITE_PATH}/admin/order/${item.id}`
       const httpMethod = 'put'
-      axios[httpMethod](api, { data: item })
-        .then((res) => {
+      const paid = {
+        is_paid: item.is_paid,
+      };
+      axios[httpMethod](api, { data: paid })
+        .then(() => {
           this.isLoading = false
           this.$refs.oModal.closeModal()
-          alert(res.data.message)
+          //alert(res.data.message)
+          this.getOrders()
         })
-        .catch((err) => {
+        .catch(() => {
           this.isLoading = false
-          alert(err.data.message)
+          this.$refs.oModal.closeModal()
+          //alert(err.data.message)
         })
     },
-    // 刪除訂單(itemID)
+    //刪除訂單(itemID)
     delOrder(itemID) {
       this.isLoading = true
       // 刪除訂單(all)
@@ -161,20 +158,18 @@ export default {
     },
   },
   created() {
-    // 在dashboard已處理登入問題
-    // const token = document.cookie.replace(/(?:(?:^|.*;\s*)shopToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
-    // axios.defaults.headers.common['Authorization'] = token
-    // this.checkSignIn()
-
+    
     //this.isLoading = true
     this.getOrders()
     // setTimeout(() => {
     //   this.isLoading = false //狀態驅動'元件'
     // }, 1000)
   },
-  mounted() {},
+  mounted() {
+  },
   components: {
-    OrderPagination,
+    //OrderPagination,
+    Pagination,
     OrdModal,
     DelModal,
     Loading

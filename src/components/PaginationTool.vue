@@ -4,17 +4,17 @@
 
             <li class="page-item" :class="{ 'disabled': pages.has_pre === false }">
                 <a class="page-link" href="#" aria-label="Previous"
-                @click.prevent="getProducts(pages.current_page-1)">
+                @click.prevent="updatePage(pages.current_page-1)">
                 <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
             <li class="page-item" v-for="page in pages.total_pages" :key="page"
                 :class="{ 'disabled': pages.current_page === page }">
-                <a class="page-link" href="#" @click.prevent="getProducts(page)">{{page}}</a>
+                <a class="page-link" href="#" @click.prevent="updatePage(page)">{{page}}</a>
             </li>
             <li class="page-item" :class="{ 'disabled': pages.has_next === false }">
                 <a class="page-link" href="#" aria-label="Next"
-                @click.prevent="getProducts(pages.current_page+1)">
+                @click.prevent="updatePage(pages.current_page+1)">
                 <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
@@ -24,6 +24,6 @@
 
 <script>
 export default {
-    props: ['pages', 'getProducts'],
+    props: ['pages', 'updatePage'],
 }
 </script>

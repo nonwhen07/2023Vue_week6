@@ -170,7 +170,7 @@
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button type="button" class="btn btn-primary" @click="updataProduct(tempProduct)">
+          <button type="button" class="btn btn-primary" @click="updateProduct(tempProduct)">
             確認送出
           </button>
         </div>
@@ -184,7 +184,7 @@
 import Modal from 'bootstrap/js/dist/modal'
 
 export default {
-  props: ['tempProduct', 'updataProduct', 'addImage', 'delImage'],
+  props: ['tempProduct', 'updateProduct', 'addImage', 'delImage'],
   data() {
     return {
       prodModal: null,
