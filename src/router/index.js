@@ -7,26 +7,34 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/front/FrontView.vue'),
+      component: () => import('../views/user/UserView.vue'),
       children: [
         {
           path: '',
           name: 'home',
-          // component: HomeView
-          component: () => import('../views/front/HomeView.vue')
+          component: () => import('../views/user/HomeView.vue')
         },
         {
           path: 'about',
           name: 'about',
-          component: () => import('../views/front/AboutView.vue')
+          component: () => import('../views/user/AboutView.vue')
         },
         {
-          path: 'products',
-          component: () => import('../views/front/ProductsView.vue')
+          path: 'products/',
+          component: () => import('../views/user/ProductsView.vue')
+        },
+        {
+          path: 'products/:category',
+          component: () => import('../views/user/ProductsView.vue'),
+          props: (route) => {
+            return {
+              category: route.params.category
+            }
+          }
         },
         {
           path: 'cart',
-          component: () => import('../views/front/CartView.vue')
+          component: () => import('../views/user/CartView.vue')
         },
         
       ]
@@ -34,7 +42,7 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/front/LoginView.vue')
+      component: () => import('../views/user/LoginView.vue')
     },
     {
       path: '/admin',
@@ -43,6 +51,15 @@ const router = createRouter({
         {
           path: 'products',
           component: () => import('../views/dashboard/ProductsView.vue')
+        },
+        {
+          path: 'products/:category',
+          component: () => import('../views/dashboard/ProductsView.vue'),
+          props: (route) => {
+            return {
+              category: route.params.category
+            }
+          }
         },
         {
           path: 'orders',
@@ -57,7 +74,7 @@ const router = createRouter({
     //404
     {
       path: '/:pathMatch(.*)*',
-      component: () => import('../views/front/NotFound.vue')
+      component: () => import('../views/user/NotFound.vue')
     },
     // //重新導向 
     // {

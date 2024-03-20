@@ -4,38 +4,33 @@
   <div class="container">
     <div class="mt-4">
       <!-- 產品列表 -->
-      <!-- <ul class="list-group list-group-horizontal">
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=all&page=1" class="router-link-active active px-3 px-md-4 py-1"> 全部 </a>
+      <ul class="list-group list-group-horizontal">
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/">全部</RouterLink>
         </li>
-
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=旅遊類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 旅遊類 </a>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/旅遊" >旅遊</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=蔬果類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 蔬果類 </a>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/蔬果">蔬果</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=肉品類&page=1" class="router-link-active active px-3 px-md-4 py-1"> 肉品類 </a>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/肉品">肉品</RouterLink>
         </li>
-
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=吐司&page=1" class="router-link-active active px-3 px-md-4 py-1"> 吐司 </a>
+        <!-- <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/吐司">吐司</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=漢堡&page=1" class="router-link-active active px-3 px-md-4 py-1"> 漢堡 </a>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/漢堡" >漢堡</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=蛋餅&page=1" class="router-link-active active px-3 px-md-4 py-1"> 蛋餅 </a>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/蛋餅">蛋餅</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0"> 
-          <a aria-current="page" href="?category=飲品&page=1" class="router-link-active active px-3 px-md-4 py-1"> 飲品 </a>
-        </li>
+        <li class="list-group-item btn btn-outline-primary p-0">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/飲品">飲品</RouterLink>
+        </li> -->
       </ul> 
-      <Navbar></Navbar> -->
-
-      
-      
+      <!-- <Navbar></Navbar> -->
 
       <table class="table align-middle">
         <thead>
@@ -51,10 +46,8 @@
             <td>
               <div style="background-size: cover; background-position: center">
                 <img
-                  :src="product.imageUrl"
-                  v-bind:alt="product.title"
-                  class="img-fluid"
-                  style="height: 100px"
+                  class="img-fluid" style="height: 100px"
+                  :src="product.imageUrl" v-bind:alt="product.title"
                   v-bind:title="product.title + ':' + product.description"
                 />
               </div>
@@ -309,8 +302,11 @@ import UserModal from '@/components/UserProductModal.vue'
 const { VITE_URL, VITE_PATH } = import.meta.env
 
 export default {
+  props: ['category'],
   data() {
     return {
+      //category: {}, //動態路由-category 
+
       tempProduct: {}, //點選產品
       selectID: '', //點選產品ID
       products: [], //產品菜單
@@ -350,17 +346,23 @@ export default {
       }, 200)
     },
     getProducts(page = 1) {
-      const api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`
-      axios
-        .get(api)
-        .then((res) => {
-          this.products = res.data.products
-          this.pages = res.data.pagination
-        })
-        .catch((err) => {
-          alert(err.data.message)
-          this.isLoading = false
-        })
+      this.isLoading = true
+      let api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`;
+      if(this.category !== undefined) {
+        api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}&category=${this.category}`
+      };
+      axios.get(api)
+      .then((res) => {
+        this.products = res.data.products
+        this.pages = res.data.pagination
+      })
+      .catch((err) => {
+        alert(err.data.message)
+        this.isLoading = false
+      });
+      setTimeout(() => {
+        this.isLoading = false //狀態驅動'元件'
+      }, 1000)
     },
     getCarts() {
       const api = `${VITE_URL}/api/${VITE_PATH}/cart`
@@ -467,8 +469,17 @@ export default {
       return phoneNumber.test(value) ? true : '電話為必填，須為有效的電話號碼'
     }
   },
-  created() {},
-  mounted() {
+  created() {
+  },
+  watch: {
+    category() {// watch 動態路由 props
+      this.getProducts();
+      //console.log(this.$route.params.category); //測試動態路由匯入
+    }
+  },
+  mounted() { 
+    
+
     //VueLoading作為'元件'使用方式
     this.isLoading = true
     this.getProducts()
