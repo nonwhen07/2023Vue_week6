@@ -60,7 +60,6 @@
     </table>
   </div>
   <!-- pagination -->
-  <!-- <OrderPagination :pages="pages" :update-page="getOrders"></OrderPagination> -->
   <Pagination :pages="pages" :update-page="getOrders"></Pagination>
   <!-- Modal -->
   <Ord-Modal :temp-order="tempOrder" :update-paid="updatePaid" ref="oModal"></Ord-Modal>
@@ -89,22 +88,22 @@ export default {
       pages: {} //訂單列表-頁碼
     }
   },
+  inject: ['emitter'],
   methods: {
     //取得頁面Orders
     getOrders(page = 1) {
       this.isLoading = true
       const api = `${VITE_URL}/api/${VITE_PATH}/admin/orders?page=${page}`
-      axios
-        .get(api)
+      axios.get(api)
         .then((res) => {
-          this.isLoading = false
           this.orders = res.data.orders
           this.pages = res.data.pagination
         })
-        .catch(() => {
-          this.isLoading = false
-          //alert(err.data.message)
-        })
+        
+        setTimeout(() => {
+          this.isLoading = false //狀態驅動'元件'
+        }, 1000)
+
     },
     //開啟Modal判斷
     openModal(action = 'check', item) {
@@ -118,52 +117,72 @@ export default {
     },
     //更新訂單的"付款"資訊
     updatePaid(item) {
-      this.isLoading = true
       const api = `${VITE_URL}/api/${VITE_PATH}/admin/order/${item.id}`
       const httpMethod = 'put'
       const paid = {
         is_paid: item.is_paid,
       };
       axios[httpMethod](api, { data: paid })
-        .then(() => {
-          this.isLoading = false
+        .then((res) => {
+          
           this.$refs.oModal.closeModal()
           //alert(res.data.message)
-          this.getOrders()
+          //this.getOrders()
+          if (res.data.success) {
+            this.getOrders();
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '更新已付款',
+            });
+          } 
+          else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '更新失敗',
+              content: res.data.message.join('、'),
+            });
+          }
         })
-        .catch(() => {
-          this.isLoading = false
-          this.$refs.oModal.closeModal()
-          //alert(err.data.message)
-        })
+        // .catch(() => {
+        //   this.isLoading = false
+        //   this.$refs.oModal.closeModal()
+        //   //alert(err.data.message)
+        // })
     },
     //刪除訂單(itemID)
     delOrder(itemID) {
-      this.isLoading = true
+      
       // 刪除訂單(all)
       //const api2 = `${VITE_URL}/api/${VITE_PATH}/admin/orders/all`;
       const api = `${VITE_URL}/api/${VITE_PATH}/admin/order/${itemID}`
       const httpMethod = 'delete'
       axios[httpMethod](api)
         .then((res) => {
-          this.isLoading = false
-          this.getOrders()
           this.$refs.dModal.closeModal()
-          alert(res.data.message)
+          // this.getOrders()
+          // alert(res.data.message)
+          if (res.data.success) {
+            this.getOrders();
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '已刪除訂單',
+            });
+          } 
+          else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '刪除失敗',
+              content: res.data.message.join('、'),
+            });
+          }
         })
-        .catch((err) => {
-          this.isLoading = false
-          alert(err.data.message)
-        })
+        // .catch((err) => {
+        //   alert(err.data.message)
+        // })
     },
   },
   created() {
-    
-    //this.isLoading = true
     this.getOrders()
-    // setTimeout(() => {
-    //   this.isLoading = false //狀態驅動'元件'
-    // }, 1000)
   },
   mounted() {
   },

@@ -102,7 +102,7 @@ import DelModal from '@/components/DeleteModal.vue';
 const { VITE_URL, VITE_PATH } = import.meta.env;
 
 export default {
-  props: ['category'],//動態路由-category 
+  props: ['category'], //動態路由-category 
   data(){
     return {
       isLoading: false,
@@ -113,6 +113,7 @@ export default {
       pages: {}, //產品菜單-頁碼
     }
   },
+  inject: ['emitter'],
   methods: {
     getProducts(page = 1) {
       this.isLoading = true
@@ -122,9 +123,10 @@ export default {
       };
       axios.get(api)
       .then((res) => {
-          this.products = res.data.products;
-          this.pages = res.data.pagination;
+        this.products = res.data.products;
+        this.pages = res.data.pagination;
       })
+
       setTimeout(() => {
         this.isLoading = false //狀態驅動'元件'
       }, 1000)
@@ -137,10 +139,10 @@ export default {
         this.$refs.pModal.openModal();
       }
       if (isNew) {
-          this.tempProduct = {}
+        this.tempProduct = {}
       } 
       else {
-          this.tempProduct = { ...item }
+        this.tempProduct = { ...item }
       }
       this.isNew = isNew;
     },
@@ -148,18 +150,29 @@ export default {
       let api = `${VITE_URL}/api/${VITE_PATH}/admin/product`; //預設新增，再來判斷isNew
       let httpMethod = 'post'
       if (!this.isNew) {
-          api = `${VITE_URL}/api/${VITE_PATH}/admin/product/${item.id}`
-          httpMethod = 'put'
+        api = `${VITE_URL}/api/${VITE_PATH}/admin/product/${item.id}`
+        httpMethod = 'put'
       }
       axios[httpMethod](api, { data: item })
       .then((res) => {
-          this.isNew = false;
+        this.isNew = false;
+        this.$refs.pModal.closeModal();
+        //this.getProducts();
+        //alert(res.data.message);
+        if (res.data.success) {
           this.getProducts();
-          this.$refs.pModal.closeModal();
-          alert(res.data.message);
-      })
-      .catch((err) => {
-          alert(err.data.message);
+          this.emitter.emit('push-message', {
+            style: 'success',
+            title: '更新成功',
+          });
+        } 
+        else {
+          this.emitter.emit('push-message', {
+            style: 'danger',
+            title: '更新失敗',
+            content: res.data.message.join('、'),
+          });
+        }
       })
     },
     delProduct(itemID) {
@@ -167,12 +180,23 @@ export default {
       let httpMethod = 'delete';
       axios[httpMethod](api)
       .then((res) => {
+        this.$refs.dModal.closeModal();
+        // this.getProducts();
+        // alert(res.data.message);
+        if (res.data.success) {
           this.getProducts();
-          this.$refs.dModal.closeModal();
-          alert(res.data.message);
-      })
-      .catch((err) => {
-          alert(err.data.message);
+          this.emitter.emit('push-message', {
+            style: 'success',
+            title: '已刪除產品',
+          });
+        } 
+        else {
+          this.emitter.emit('push-message', {
+            style: 'danger',
+            title: '刪除失敗',
+            content: res.data.message.join('、'),
+          });
+        }
       })
     },
     addImage() {
@@ -181,21 +205,15 @@ export default {
       }
       const addImageUrl = document.getElementById('addImageUrl').value;
       this.tempProduct.imagesUrl.push(addImageUrl);
-      //調整商品的主要顯示圖片bug
-      this.tempProduct.imageUrl = this.tempProduct.imagesUrl[0];
+      this.tempProduct.imageUrl = this.tempProduct.imagesUrl[0]; //調整商品的主要顯示圖片bug
     },
     delImage(index) {
       this.tempProduct.imagesUrl.splice(index, 1);
-      //調整商品的主要顯示圖片bug
       this.tempProduct.imageUrl = this.tempProduct.imagesUrl[0];
     },
   },
-  created() { 
-    //this.isLoading = true
+  created() {
     this.getProducts()
-    // setTimeout(() => {
-    //   this.isLoading = false //狀態驅動'元件'
-    // }, 1000)
   },
   watch: {
     category() {// watch 動態路由 props

@@ -334,6 +334,7 @@ export default {
       }
     }
   },
+  inject: ['emitter'],
   methods: {
     openModal(item) {
       this.$refs.uModal.openModal()
@@ -347,6 +348,7 @@ export default {
     },
     getProducts(page = 1) {
       this.isLoading = true
+
       let api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`;
       if(this.category !== undefined) {
         api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}&category=${this.category}`
@@ -356,30 +358,30 @@ export default {
         this.products = res.data.products
         this.pages = res.data.pagination
       })
-      .catch((err) => {
-        alert(err.data.message)
-        this.isLoading = false
-      });
+
       setTimeout(() => {
         this.isLoading = false //狀態驅動'元件'
       }, 1000)
     },
     getCarts() {
+      this.isLoading = true
+
       const api = `${VITE_URL}/api/${VITE_PATH}/cart`
-      axios
-        .get(api)
+      axios.get(api)
         .then((res) => {
           // console.log('this.cart', res.data);
           // console.log('this.cart.carts', res.data.data.carts);
           this.carts = res.data.data
           this.cartslength = res.data.data.carts.length
         })
-        .catch((err) => {
-          alert(err.data.message)
-          this.isLoading = false
+        .catch(() => {
           this.carts = []
           this.cartslength = 0
         })
+
+      setTimeout(() => {
+        this.isLoading = false //狀態驅動'元件'
+      }, 1000)
     },
     addToCart(itemId, qty = 1) {
       this.status.addCartLoading = itemId
@@ -390,13 +392,21 @@ export default {
         qty: qty
       }
       axios[httpMethod](api, { data: cart })
-        .then(() => {
-          this.getCarts()
+        .then((res) => {
+          //this.getCarts()
           this.status.addCartLoading = ''
           this.$refs.uModal.closeModal()
+
+          if (res.data.success) {
+            this.getCarts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '加入購物車成功',
+            });
+          } 
         })
-        .catch((err) => {
-          alert(err.data.message)
+        .catch(() => {
+          //alert(err.data.message)
           this.status.addCartLoading = ''
         })
     },
@@ -409,13 +419,27 @@ export default {
         qty: qty
       }
       axios[httpMethod](api, { data: order })
-        .then(() => {
-          this.getCarts()
+        .then((res) => {
+          //this.getCarts()
           this.status.cartQtyLoading = ''
           this.$refs.uModal.closeModal()
+
+          if (res.data.success) {
+            this.getCarts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '加入購物車成功',
+            });
+          }
+
         })
         .catch((err) => {
-          alert(err.data.message)
+          //alert(err.data.message)
+          this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '加入失敗',
+              content: err.data.message.join('、'),
+            });
           this.status.cartQtyLoading = ''
         })
     },
@@ -424,28 +448,42 @@ export default {
       let api = `${VITE_URL}/api/${VITE_PATH}/cart/${itemID}` //預設新增，再來判斷isNew
       let httpMethod = 'delete'
       axios[httpMethod](api)
-        .then(() => {
-          this.getCarts()
+        .then((res) => {
+          //this.getCarts()
           this.status.delCart = ''
+          if (res.data.success) {
+            this.getCarts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '刪除品項成功',
+            });
+          }
         })
-        .catch((err) => {
-          alert(err.data.message)
-          this.status.delCart = ''
-        })
+        // .catch((err) => {
+        //   alert(err.data.message)
+        //   this.status.delCart = ''
+        // })
     },
     delAllCart() {
       this.status.delCart = 'delAll'
       let api = `${VITE_URL}/api/${VITE_PATH}/carts` //預設新增，再來判斷isNew
       let httpMethod = 'delete'
       axios[httpMethod](api)
-        .then(() => {
+        .then((res) => {
           this.getCarts()
           this.status.delCart = ''
+          if (res.data.success) {
+            this.getCarts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '已清空購物車',
+            });
+          }
         })
-        .catch((err) => {
-          alert(err.data.message)
-          this.status.delCart = ''
-        })
+        // .catch((err) => {
+        //   alert(err.data.message)
+        //   this.status.delCart = ''
+        // })
     },
     sendOrder() {
       this.isLoading = true
@@ -453,16 +491,31 @@ export default {
       const order = this.form
       axios
         .post(api, { data: order })
-        .then(() => {
+        .then((res) => {
           //alert(res.data.message);
-          this.getCarts()
+          //this.getCarts()
           this.$refs.form.resetForm()
           this.isLoading = false
+
+          if (res.data.success) {
+            this.getCarts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '已送出訂單',
+            });
+          }
+          else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '送出訂單失敗',
+              content: res.data.message.join('、'),
+            });
+          }
         })
-        .catch((err) => {
-          alert(err.data.message)
-          this.isLoading = false
-        })
+        // .catch((err) => {
+        //   alert(err.data.message)
+        //   this.isLoading = false
+        // })
     },
     isPhone(value) {
       const phoneNumber = /^(09)[0-9]{8}$/
