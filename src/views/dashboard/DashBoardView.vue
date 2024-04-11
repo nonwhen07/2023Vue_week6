@@ -10,7 +10,7 @@
 
     <div class="container-fluid mt-3 position-relative">
         <ToastMessages></ToastMessages>
-        <RouterView></RouterView>
+        <RouterView v-if="isSignIn"></RouterView>
     </div>
     
 </template>
@@ -25,7 +25,7 @@ const { VITE_URL } = import.meta.env;
 export default {
     data() {
         return {
-            isNew: false,
+            isSignIn: false, //確認登入顯示後台
             tempProduct: {}, //點選產品
             selectID: '', //點選產品ID
             products : [], //產品菜單
@@ -39,17 +39,23 @@ export default {
             .then((res) => {
                 if (res.data.success) {
                     emitter.emit('push-message', {
-                    style: 'success',
-                    title: '登入成功',
+                        style: 'success',
+                        title: '登入成功',
                     });
                 }
+                this.isSignIn = true;
             })
             .catch(() => {
-                emitter.emit('push-message', {
-                    style: 'danger',
-                    title: '登入資料有誤，請確認帳號密碼，將轉回登入頁面',
-                });
+                // emitter.emit('push-message', {
+                //     style: 'danger',
+                //     title: '登入資料有誤，請確認帳號密碼，將轉回登入頁面',
+                // });
                 this.$router.push('/login');
+                this.isSignIn = false;
+
+                //document.cookie = `shopToken=; expires=${new Date()}`;
+                // const emptytoken=''; //清空shopToken內的植
+                // document.cookie = `shopToken=${emptytoken}; expires=${new Date()}`;
             })
             
         },
@@ -57,14 +63,16 @@ export default {
             const api = `${VITE_URL}/logout`;
             axios.post(api)
             .then(() => {
-                alert('登出成功');
-                this.$router.push('/login');
+                emitter.emit('push-message', {
+                    style: 'success',
+                    title: '登出成功',
+                });
+                //document.cookie = `shopToken=; expires=${new Date()}`;
+                const emptytoken=''; //清空shopToken內的植
+                document.cookie = `shopToken=${emptytoken}; expires=${new Date()}`;
             })
-            // .catch(() => {
-            //     alert('帳號密碼有誤，將轉回登入頁面');
-            //     this.$router.push('/login');
-            // })
-            
+            this.isSignIn = false;
+            this.$router.push('/login');
         },
     },
     components: {

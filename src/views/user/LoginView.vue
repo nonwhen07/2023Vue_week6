@@ -47,34 +47,34 @@ export default {
   methods: {
     signIn () {
       this.isLoading = true;
-
       const api = `${VITE_URL}/admin/signin`;
       axios.post(api, this.user)
-        .then((res) => {
-          setTimeout(() => {
-            this.isLoading = false //狀態驅動'元件'
-          }, 500)
+      .then((res) => {
+        setTimeout(() => {
+          this.isLoading = false //狀態驅動'元件'
+        }, 500);
+        const { token, expired } = res.data
+        document.cookie = `shopToken=${token}; expires=${new Date(expired)}`;
+        if (res.data.success) {
+          // emitter.emit('push-message', {
+          //   style: 'success',
+          //   title: '登入成功',
+          // });
+          this.$router.push("/admin/products");
+        } 
+      })
+      .catch(() => {
+        setTimeout(() => {
+          this.isLoading = false //狀態驅動'元件'
+        }, 500);
+        emitter.emit('push-message', {
+          style: 'danger',
+          title: '登入資料有誤，請確認帳號密碼，將轉回登入頁面',
+        });
 
-          const { token, expired } = res.data
-          document.cookie = `shopToken=${token}; expires=${new Date(expired)}`;
-          //this.$router.push("/admin/products");
-          if (res.data.success) {
-            emitter.emit('push-message', {
-              style: 'success',
-              title: '登入成功',
-            });
-            this.$router.push("/admin/products");
-          } 
-        })
-        .catch(() => {
-          setTimeout(() => {
-            this.isLoading = false //狀態驅動'元件'
-          }, 500)
-
-          emitter.emit('push-message', {
-            style: 'danger',
-            title: '登入資料有誤，請確認帳號密碼，將轉回登入頁面',
-          });
+        //document.cookie = `shopToken=; expires=${new Date()}`;
+        const emptytoken=''; //清空shopToken內的植
+        document.cookie = `shopToken=${emptytoken}; expires=${new Date()}`;
       })
     }
   },

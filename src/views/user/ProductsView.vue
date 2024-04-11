@@ -1,20 +1,23 @@
 <template>
+
+
+
   <Loading :active="isLoading" />
   <h2>商品列表</h2>
   <div class="container">
     <div class="mt-4">
       <!-- 產品列表 -->
-      <ul class="list-group list-group-horizontal">
-        <li class="list-group-item btn btn-outline-primary p-0">
+      <ul class="list-unstyled d-flex justify-content-center mt-4" style="margin-bottom: 50px; margin-top: 50px;">
+        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === undefined ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/">全部</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0">
-          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/旅遊" >旅遊</RouterLink>
+        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === '旅遊' ? 'active' : ''">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/旅遊">旅遊</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0">
+        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === '蔬果' ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/蔬果">蔬果</RouterLink>
         </li>
-        <li class="list-group-item btn btn-outline-primary p-0">
+        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === '肉品' ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/肉品">肉品</RouterLink>
         </li>
         <!-- <li class="list-group-item btn btn-outline-primary p-0">
@@ -32,7 +35,7 @@
       </ul> 
       <!-- <Navbar></Navbar> -->
 
-      <table class="table align-middle">
+      <!-- <table class="table align-middle">
         <thead>
           <tr>
             <th>圖片</th>
@@ -93,7 +96,63 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
+      <ul class="row list-unstyled">
+        <li class="col-10 col-md-4 mx-auto" v-for="product in products" :key="product.id">
+          <!-- <div class=" px-3" style="background-size: cover; background-position: center">
+            <img
+              class="img-fluid" style="background-position: center 70%; height: 300px;"
+              :src="product.imageUrl" v-bind:alt="product.title"
+              v-bind:title="product.title + ':' + product.description"
+            />
+          </div> -->
+          <!-- USE_https://miketricking.github.io/bootstrap-image-hover/ HOVER EFFECT 9 -->
+          <div class="img-fluid hovereffect px-3" style="background-size: cover; background-position: center; width: 100%; height: 250px;">
+            <img class="img-responsive" style="width: 100%; height: 100%;" :src="product.imageUrl" :alt="product.title" :title="product.title + ':' + product.description">
+              <div class="overlay" style="margin-top: 100px;">
+                <h2>{{product.title}}</h2>
+                <a href="#" type="button"
+                  class="info"
+                  :disabled="product.id === status.checkProduct"
+                  @click="openModal(product)">
+                  <i class="fas fa-spinner fa-pulse"></i>
+                  <span
+                    v-if="product.id === status.checkProduct"
+                    class="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  查看更多
+                </a>
+              </div>
+          </div>
+          <div class="" style="text-align: center;">
+            <p class="products-title m-0" role="button">{{product.title}}</p>
+            <p v-if="product.price" class="products-title mt-1" role="button">
+              <del class="small">$ {{ product.origin_price }} </del>&nbsp;現在只要&nbsp;
+              <span class="small" style="color:red;">$ {{ product.price }} </span>
+            </p>
+            <p v-else class="products-title mt-1" role="button">
+              <span class="small" style="color:red;">$ {{ product.origin_price }} </span>
+            </p>
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm mx-auto fs-6"
+              :disabled="product.id === status.addCartLoading"
+              @click="addToCart(product.id, 1)"
+            >
+              <i class="fas fa-spinner fa-pulse"></i>
+              <span
+                v-if="product.id === status.addCartLoading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
+              加入購物車
+            </button>
+          </div>
+        </li>
+      </ul>
       <!-- pagination -->
       <Pagination :pages="pages" :update-page="getProducts"></Pagination>
       <!-- 購物車列表 -->
@@ -296,6 +355,8 @@ import 'vue-loading-overlay/dist/css/index.css'
 import Pagination from '@/components/PaginationTool.vue'
 import UserModal from '@/components/UserProductModal.vue'
 
+
+
 // import Navbar from '@/components/FrontNavbar.vue'
 
 
@@ -320,6 +381,9 @@ export default {
         cartQtyLoading: '',
         delCart: ''
       },
+
+
+      isActive: 'all',
 
       isLoading: false, //loading狀態
       form: {
@@ -369,8 +433,6 @@ export default {
       const api = `${VITE_URL}/api/${VITE_PATH}/cart`
       axios.get(api)
         .then((res) => {
-          // console.log('this.cart', res.data);
-          // console.log('this.cart.carts', res.data.data.carts);
           this.carts = res.data.data
           this.cartslength = res.data.data.carts.length
         })
@@ -520,7 +582,15 @@ export default {
     isPhone(value) {
       const phoneNumber = /^(09)[0-9]{8}$/
       return phoneNumber.test(value) ? true : '電話為必填，須為有效的電話號碼'
-    }
+    },
+
+
+
+
+    getPath() { //路由判定使用
+      this.isActive = this.category;
+    },
+
   },
   created() {
   },
@@ -528,6 +598,8 @@ export default {
     category() {// watch 動態路由 props
       this.getProducts();
       //console.log(this.$route.params.category); //測試動態路由匯入
+
+      this.getPath()
     }
   },
   mounted() { 
@@ -535,6 +607,9 @@ export default {
 
     //VueLoading作為'元件'使用方式
     this.isLoading = true
+    this.getPath() //路由判定使用
+
+
     this.getProducts()
     this.getCarts()
     //VueLoading作為'元件'使用方式

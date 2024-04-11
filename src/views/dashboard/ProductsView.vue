@@ -5,7 +5,7 @@
     <div class="text-end mt-4">
 
       <!-- 產品列表(後台之後要改成動態讀取並v-for生成) -->
-      <ul class="list-group list-group-horizontal">
+      <ul class="list-group list-group-horizontal justify-content-center">
         <li class="list-group-item btn btn-outline-primary p-0">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/admin/products/">全部</RouterLink>
         </li>
