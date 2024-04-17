@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as c}from"./index-CkW3i1ZR.js";const o={},n={class:"d-flex justify-content-center",style:{"margin-top":"50px"}};function s(r,_){return c(),t("h2",n,"Home")}const f=e(o,[["render",s]]);export{f as default};
