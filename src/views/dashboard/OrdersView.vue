@@ -1,6 +1,6 @@
 <template>
   <Loading :active="isLoading"></Loading>
-  <!-- <h2>訂單列表</h2> -->
+  <h2 class="d-flex justify-content-center">訂單列表</h2>
   <div class="container">
     <table class="table mt-4">
       <thead>

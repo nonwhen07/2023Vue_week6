@@ -1,12 +1,33 @@
 <template>
     <h2>這是後台</h2>
-    <nav>
+    <!-- <nav>
         <RouterLink to="/">回到前台</RouterLink> |
         <RouterLink to="/admin/products">產品列表</RouterLink> |
         <RouterLink to="/admin/orders">訂單列表</RouterLink> |
         <RouterLink to="/admin/coupon">優惠卷列表</RouterLink> |
         <RouterLink to="" @click="logout">登出</RouterLink> 
-    </nav>
+    </nav> -->
+    <ul class="category list-unstyled d-flex justify-content-left">
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/">回到前台</RouterLink>
+        </li> 
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/about">關於我們</RouterLink>
+        </li> 
+        
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/products">產品列表</RouterLink>
+        </li>
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/orders">訂單列表</RouterLink>
+        </li> 
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/coupon">優惠卷列表</RouterLink>
+        </li> 
+        <li class="btn btn-outline-secondary p-0 ms-1">
+            <RouterLink class="router-link-active px-3 px-md-4 py-1" to="" @click="logout">登出</RouterLink>
+        </li>
+    </ul>
 
     <div class="container-fluid mt-3 position-relative">
         <ToastMessages></ToastMessages>

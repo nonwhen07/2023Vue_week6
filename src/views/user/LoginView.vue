@@ -3,7 +3,7 @@
   <div class="container-fluid mt-3 position-relative">
     <ToastMessages></ToastMessages>
   </div>
-  <h2>登入頁面</h2>
+  <h2 class="d-flex justify-content-center">登入頁面</h2>
   <div class="container mt-5" id="mainApp">
     <form class="row justify-content-center" @submit.prevent="signIn">
       <div class="col-md-6">
@@ -17,7 +17,8 @@
           <input id="inputPassword" type="password" class="form-control" placeholder="Password" required v-model="user.password" />
         </div>
         <div class="text-end mt-4">
-          <button class="btn btn-lg btn-primary btn-block" type="submit">登入</button>
+          <button class="btn btn-lg btn-secondary btn-block" type="submit">登入</button>
+          <RouterLink class="btn btn-lg btn-outline-secondary btn-block" to="/">回到首頁</RouterLink>
         </div>
       </div>
     </form>

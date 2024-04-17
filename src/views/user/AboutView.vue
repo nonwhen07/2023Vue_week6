@@ -1,5 +1,5 @@
 <template>
-  <h2>關於我們</h2>
+  <h2 class="d-flex justify-content-center" style="margin-top: 50px;">關於我們</h2>
 </template>
 
 <style>
@@ -14,7 +14,7 @@
 
 
 <script>
-const{VITE_URL, VITE_PATH} = import.meta.env;
+// const{VITE_URL, VITE_PATH} = import.meta.env;
 
 export default {
   data() {

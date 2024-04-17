@@ -1,15 +1,15 @@
 <template>
-
-
-
   <Loading :active="isLoading" />
-  <h2>商品列表</h2>
   <div class="container">
     <div class="mt-4">
-      <!-- 產品列表 -->
-      <ul class="list-unstyled d-flex justify-content-center mt-4" style="margin-bottom: 50px; margin-top: 50px;">
-        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === undefined ? 'active' : ''">
+      <h2 class="d-flex justify-content-center" style="margin-top: 50px;">商品列表</h2>
+      <!-- 產品分類 -->
+      <ul class="category list-unstyled d-flex justify-content-center mt-4" style="margin-bottom: 50px;">
+        <!-- <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === undefined ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/">全部</RouterLink>
+        </li> -->
+        <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === 'all' ? 'active' : ''">
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/all">全部</RouterLink>
         </li>
         <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === '旅遊' ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/旅遊">旅遊</RouterLink>
@@ -24,7 +24,7 @@
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/吐司">吐司</RouterLink>
         </li>
         <li class="list-group-item btn btn-outline-primary p-0">
-          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/漢堡" >漢堡</RouterLink>
+          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/漢堡">漢堡</RouterLink>
         </li>
         <li class="list-group-item btn btn-outline-primary p-0">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/蛋餅">蛋餅</RouterLink>
@@ -33,79 +33,10 @@
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/飲品">飲品</RouterLink>
         </li> -->
       </ul> 
-      <!-- <Navbar></Navbar> -->
-
-      <!-- <table class="table align-middle">
-        <thead>
-          <tr>
-            <th>圖片</th>
-            <th>產品名稱</th>
-            <th>價格</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="product in products" :key="product.id">
-            <td>
-              <div style="background-size: cover; background-position: center">
-                <img
-                  class="img-fluid" style="height: 100px"
-                  :src="product.imageUrl" v-bind:alt="product.title"
-                  v-bind:title="product.title + ':' + product.description"
-                />
-              </div>
-            </td>
-            <td>{{ product.title }}</td>
-            <td>
-              <del class="h6">原價 {{ product.origin_price }} 元</del>
-              <div class="h5">現在只要 {{ product.price }} 元</div>
-            </td>
-            <td>
-              <div class="btn-group">
-                <button
-                  type="button"
-                  class="btn btn-outline-primary btn-sm"
-                  :disabled="product.id === status.checkProduct"
-                  @click="openModal(product)"
-                >
-                  <i class="fas fa-spinner fa-pulse"></i>
-                  <span
-                    v-if="product.id === status.checkProduct"
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  查看更多
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-outline-danger btn-sm"
-                  :disabled="product.id === status.addCartLoading"
-                  @click="addToCart(product.id, 1)"
-                >
-                  <i class="fas fa-spinner fa-pulse"></i>
-                  <span
-                    v-if="product.id === status.addCartLoading"
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
-                  加入購物車
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table> -->
+      <!-- 產品列表 -->
       <ul class="row list-unstyled">
         <li class="col-10 col-md-4 mx-auto" v-for="product in products" :key="product.id">
-          <!-- <div class=" px-3" style="background-size: cover; background-position: center">
-            <img
-              class="img-fluid" style="background-position: center 70%; height: 300px;"
-              :src="product.imageUrl" v-bind:alt="product.title"
-              v-bind:title="product.title + ':' + product.description"
-            />
-          </div> -->
+         
           <!-- USE_https://miketricking.github.io/bootstrap-image-hover/ HOVER EFFECT 9 -->
           <div class="img-fluid hovereffect px-3" style="background-size: cover; background-position: center; width: 100%; height: 250px;">
             <img class="img-responsive" style="width: 100%; height: 100%;" :src="product.imageUrl" :alt="product.title" :title="product.title + ':' + product.description">
@@ -115,14 +46,14 @@
                   class="info"
                   :disabled="product.id === status.checkProduct"
                   @click="openModal(product)">
-                  <i class="fas fa-spinner fa-pulse"></i>
-                  <span
+                  查看更多
+                  <!-- <i class="fas fa-spinner fa-pulse"></i> -->
+                  <!-- <span
                     v-if="product.id === status.checkProduct"
                     class="spinner-border spinner-border-sm"
                     role="status"
                     aria-hidden="true"
-                  ></span>
-                  查看更多
+                  ></span> -->
                 </a>
               </div>
           </div>
@@ -191,7 +122,7 @@
                   @click="delCart(cartitem.id)"
                   :disabled="cartitem.id === status.delCart"
                 >
-                  <i v-if="cartitem.id !== status.delCart" class="fas fa-spinner fa-pulse">x</i>
+                  <i v-if="cartitem.id !== status.delCart" class="bi bi-x-lg"></i>
                   <span
                     class="spinner-border spinner-border-sm"
                     role="status"
@@ -255,7 +186,7 @@
               <td colspan="3" class="text-end">總計</td>
               <td class="text-end">{{ carts.total }}</td>
             </tr>
-            <tr>
+            <tr v-if="carts.final_total">
               <td colspan="3" class="text-end text-success">折扣價</td>
               <td class="text-end text-success">{{ carts.final_total }}</td>
             </tr>
@@ -414,9 +345,13 @@ export default {
       this.isLoading = true
 
       let api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}`;
-      if(this.category !== undefined) {
+      // if(this.category !== undefined) {
+      //   api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}&category=${this.category}`
+      // }
+      if(this.category !== 'all') {
         api = `${VITE_URL}/api/${VITE_PATH}/products?page=${page}&category=${this.category}`
-      };
+      }
+
       axios.get(api)
       .then((res) => {
         this.products = res.data.products
@@ -434,6 +369,7 @@ export default {
       axios.get(api)
         .then((res) => {
           this.carts = res.data.data
+          //console.log('carts',  this.carts.carts)
           this.cartslength = res.data.data.carts.length
         })
         .catch(() => {

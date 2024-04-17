@@ -19,10 +19,10 @@ const router = createRouter({
           name: 'about',
           component: () => import('../views/user/AboutView.vue')
         },
-        {
-          path: 'products/',
-          component: () => import('../views/user/ProductsView.vue')
-        },
+        // {
+        //   path: 'products/',
+        //   component: () => import('../views/user/ProductsView.vue')
+        // },
         {
           path: 'products/:category',
           component: () => import('../views/user/ProductsView.vue'),
