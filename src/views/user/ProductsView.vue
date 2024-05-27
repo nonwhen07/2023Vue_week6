@@ -2,12 +2,10 @@
   <Loading :active="isLoading" />
   <div class="container">
     <div class="mt-4">
-      <h2 class="d-flex justify-content-center" style="margin-top: 50px;">商品列表</h2>
+      <h2 class="d-flex justify-content-center" style="margin-top: 75px;">商品列表</h2>
       <!-- 產品分類 -->
-      <ul class="category list-unstyled d-flex justify-content-center mt-4" style="margin-bottom: 50px;">
-        <!-- <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === undefined ? 'active' : ''">
-          <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/">全部</RouterLink>
-        </li> -->
+      <ProductNavbar :is-active="isActive"></ProductNavbar>
+      <!-- <ul class="category list-unstyled d-flex justify-content-center mt-4" style="margin-bottom: 50px;">
         <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === 'all' ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/all">全部</RouterLink>
         </li>
@@ -20,7 +18,7 @@
         <li class="btn btn-outline-secondary p-0 ms-1" :class="isActive === '肉品' ? 'active' : ''">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/肉品">肉品</RouterLink>
         </li>
-        <!-- <li class="list-group-item btn btn-outline-primary p-0">
+        <li class="list-group-item btn btn-outline-primary p-0">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/吐司">吐司</RouterLink>
         </li>
         <li class="list-group-item btn btn-outline-primary p-0">
@@ -31,12 +29,11 @@
         </li>
         <li class="list-group-item btn btn-outline-primary p-0">
           <RouterLink class="router-link-active active px-3 px-md-4 py-1" to="/products/飲品">飲品</RouterLink>
-        </li> -->
-      </ul> 
+        </li>
+      </ul> -->
       <!-- 產品列表 -->
-      <ul class="row list-unstyled">
-        <li class="col-10 col-md-4 mx-auto" v-for="product in products" :key="product.id">
-         
+      <ul class="row d-flex list-unstyled">
+        <li class="col-lg-4 col-md-8" v-for="product in products" :key="product.id">
           <!-- USE_https://miketricking.github.io/bootstrap-image-hover/ HOVER EFFECT 9 -->
           <div class="img-fluid hovereffect px-3" style="background-size: cover; background-position: center; width: 100%; height: 250px;">
             <img class="img-responsive" style="width: 100%; height: 100%;" :src="product.imageUrl" :alt="product.title" :title="product.title + ':' + product.description">
@@ -57,7 +54,7 @@
                 </a>
               </div>
           </div>
-          <div class="" style="text-align: center;">
+          <div class="py-1" style="text-align: center;">
             <p class="products-title m-0" role="button">{{product.title}}</p>
             <p v-if="product.price" class="products-title mt-1" role="button">
               <del class="small">$ {{ product.origin_price }} </del>&nbsp;現在只要&nbsp;
@@ -87,7 +84,9 @@
       <!-- pagination -->
       <Pagination :pages="pages" :update-page="getProducts"></Pagination>
       <!-- 購物車列表 -->
-      <template v-if="cartslength > 0">
+
+
+      <!-- <template v-if="cartslength > 0">
         <div class="text-end">
           <button
             class="btn btn-outline-danger"
@@ -133,16 +132,10 @@
               </td>
               <td>
                 {{ cartitem.product.title }}
-                <!-- <div class="text-success">
-                    已套用優惠券
-                    </div> -->
               </td>
               <td>
                 <div class="input-group input-group-sm">
                   <div class="input-group mb-3">
-                    <!-- <span v-if="cartitem.id === status.cartQtyLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> -->
-                    <!-- <input min="1" type="number" class="form-control" v-model="cartitem.qty"
-                        @change="cartChangeQty(cartitem, cartitem.qty)" :disabled="cartitem.id === status.cartQtyLoading"> -->
                     <button
                       type="button"
                       class="btn btn-outline-primary btn-sm"
@@ -192,7 +185,6 @@
             </tr>
           </tfoot>
         </table>
-        <!-- 購物車客戶資訊 -->
         <div class="my-5 row justify-content-center">
           <v-form ref="form" class="col-md-6" v-slot="{ errors }" @submit="sendOrder">
             <div class="mb-3">
@@ -272,7 +264,12 @@
             </div>
           </v-form>
         </div>
-      </template>
+      </template> -->
+
+      <UserCart v-if="cartslength > 0" :carts="carts" :del-all-cart="delAllCart" :del-cart="delCart"
+        :cart-change-qty="cartChangeQty" :get-carts="getCarts"></UserCart>
+
+
     </div>
   </div>
   <!-- 產品Modal -->
@@ -286,6 +283,8 @@ import 'vue-loading-overlay/dist/css/index.css'
 import Pagination from '@/components/PaginationTool.vue'
 import UserModal from '@/components/UserProductModal.vue'
 
+import ProductNavbar from '@/components/ProductNavbar.vue'
+import UserCart from '@/components/UserCart.vue'
 
 
 // import Navbar from '@/components/FrontNavbar.vue'
@@ -457,10 +456,6 @@ export default {
             });
           }
         })
-        // .catch((err) => {
-        //   alert(err.data.message)
-        //   this.status.delCart = ''
-        // })
     },
     delAllCart() {
       this.status.delCart = 'delAll'
@@ -478,47 +473,43 @@ export default {
             });
           }
         })
-        // .catch((err) => {
-        //   alert(err.data.message)
-        //   this.status.delCart = ''
-        // })
     },
-    sendOrder() {
-      this.isLoading = true
-      let api = `${VITE_URL}/api/${VITE_PATH}/order`
-      const order = this.form
-      axios
-        .post(api, { data: order })
-        .then((res) => {
-          //alert(res.data.message);
-          //this.getCarts()
-          this.$refs.form.resetForm()
-          this.isLoading = false
+    // sendOrder() {
+    //   this.isLoading = true
+    //   let api = `${VITE_URL}/api/${VITE_PATH}/order`
+    //   const order = this.form
+    //   axios
+    //     .post(api, { data: order })
+    //     .then((res) => {
+    //       //alert(res.data.message);
+    //       //this.getCarts()
+    //       this.$refs.form.resetForm()
+    //       this.isLoading = false
 
-          if (res.data.success) {
-            this.getCarts()
-            this.emitter.emit('push-message', {
-              style: 'success',
-              title: '已送出訂單',
-            });
-          }
-          else {
-            this.emitter.emit('push-message', {
-              style: 'danger',
-              title: '送出訂單失敗',
-              content: res.data.message.join('、'),
-            });
-          }
-        })
-        // .catch((err) => {
-        //   alert(err.data.message)
-        //   this.isLoading = false
-        // })
-    },
-    isPhone(value) {
-      const phoneNumber = /^(09)[0-9]{8}$/
-      return phoneNumber.test(value) ? true : '電話為必填，須為有效的電話號碼'
-    },
+    //       if (res.data.success) {
+    //         this.getCarts()
+    //         this.emitter.emit('push-message', {
+    //           style: 'success',
+    //           title: '已送出訂單',
+    //         });
+    //       }
+    //       else {
+    //         this.emitter.emit('push-message', {
+    //           style: 'danger',
+    //           title: '送出訂單失敗',
+    //           content: res.data.message.join('、'),
+    //         });
+    //       }
+    //     })
+    //     // .catch((err) => {
+    //     //   alert(err.data.message)
+    //     //   this.isLoading = false
+    //     // })
+    // },
+    // isPhone(value) {
+    //   const phoneNumber = /^(09)[0-9]{8}$/
+    //   return phoneNumber.test(value) ? true : '電話為必填，須為有效的電話號碼'
+    // },
 
 
 
@@ -562,6 +553,8 @@ export default {
     Loading,
     Pagination,
     UserModal,
+    ProductNavbar,
+    UserCart
     //Navbar
   }
 }

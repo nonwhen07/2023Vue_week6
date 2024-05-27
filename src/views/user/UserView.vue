@@ -1,52 +1,6 @@
 <template>
   <!-- <h2>這是前台</h2> -->
-  <!-- <div class="container-fluid mt-3 position-relative sticky-top">
-    <nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-light">
-      <div class="container-fluid">
-        <RouterLink class="router-link-active px-3 px-md-4 py-1" style="text-decoration: none; color: #6c757d;" to="/">這是前台</RouterLink>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav category list-unstyled d-flex justify-content-left">
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/">Home</RouterLink>
-            </li>
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/about">關於我們</RouterLink>
-            </li>
-            
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/products/all"
-                >產品列表</RouterLink
-              >
-            </li>
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/products"
-                >後台 產品列表</RouterLink
-              >
-            </li>
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/orders"
-                >後台 訂單列表</RouterLink
-              >
-            </li>
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink class="router-link-active px-3 px-md-4 py-1" to="/admin/coupon"
-                >後台 優惠卷列表</RouterLink
-              >
-            </li>
-            <li class="nav-item btn btn-outline-secondary p-0 ms-1">
-              <RouterLink v-if="!isSignIn" class="router-link-active px-3 px-md-4 py-1" to="/login"
-                >登入頁面</RouterLink
-              >
-              <RouterLink v-else class="router-link-active px-3 px-md-4 py-1" to="#" @click="logout"
-                >登出</RouterLink
-              >
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </div> -->
-  <nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-light py-2">
+  <!-- <nav class="navbar fixed-top navbar-expand-sm navbar-dark bg-light py-2">
     <div class="container-fluid">
       <RouterLink class="router-link-active px-3 px-md-4 py-1" style="text-decoration: none; color: #6c757d;" to="/">這是前台</RouterLink>
       <div class="collapse navbar-collapse">
@@ -88,8 +42,11 @@
           </li>
         </ul>
       </div>
+      <button type="button">購物車<span class="badge rounded-pill bg-danger text-white">0</span></button>
     </div>
-  </nav>
+  </nav> -->
+
+  <FrontNavbar is-sign-in="isSignIn" logout="logout"></FrontNavbar>
 
   <div class="container-fluid mt-3 position-relative">
     <ToastMessages></ToastMessages>
@@ -110,7 +67,11 @@
 <script>
 import axios from 'axios'
 import emitter from '@/methods/emitter.js'
+
 import ToastMessages from '@/components/ToastMessages.vue'
+import FrontNavbar from '@/components/FrontNavbar.vue'
+
+//import productsStore from '@/stores/productsStore.js'
 
 import '@/assets/_img_hovereffect.css'
 import '@/assets/css/userview.scss'
@@ -151,7 +112,8 @@ export default {
     }
   },
   components: {
-    ToastMessages
+    ToastMessages,
+    FrontNavbar
   },
   created() {
     //this.check();
